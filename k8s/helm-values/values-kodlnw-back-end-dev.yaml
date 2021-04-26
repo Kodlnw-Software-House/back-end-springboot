@@ -1,6 +1,6 @@
 backend:
   namespace: kodlnw-service-dev
-  image: ghcr.io/Kodlnw-Software-House/back-end-service
+  image: ghcr.io/kodlnw-software-house/back-end-service
   tag: dev
   replicas: 1
   imagePullSecrets: kodlnw-registry

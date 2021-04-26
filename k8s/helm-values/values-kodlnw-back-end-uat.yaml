@@ -1,6 +1,6 @@
 backend:
   namespace: kodlnw-service-uat
-  image: ghcr.io/Kodlnw-Software-House/back-end-service
+  image: ghcr.io/kodlnw-software-house/back-end-service
   tag: uat
   replicas: 1
   imagePullSecrets: kodlnw-registry

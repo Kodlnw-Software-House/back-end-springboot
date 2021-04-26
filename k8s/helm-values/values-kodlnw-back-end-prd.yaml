@@ -1,6 +1,6 @@
 backend:
   namespace: kodlnw-service-prd
-  image: ghcr.io/Kodlnw-Software-House/back-end-service
+  image: ghcr.io/kodlnw-software-house/back-end-service
   tag: prd
   replicas: 1
   imagePullSecrets: kodlnw-registry

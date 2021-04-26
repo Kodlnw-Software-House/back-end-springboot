@@ -47,7 +47,7 @@ spec:
           script {
             docker.withRegistry('https://ghcr.io', 'kodlnw-ghcr') {
               // Pulling UAT Image
-              uatImage = docker.image("ghcr.io/Kodlnw-Software-House/back-end-service:uat")
+              uatImage = docker.image("ghcr.io/kodlnw-software-house/back-end-service:uat")
               uatImage.pull()
               // Push UAT Image back with build tag
               uatImage.push("build-${BUILD_NUMBER}")
