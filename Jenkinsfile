@@ -137,7 +137,7 @@ spec:
 
                     // Start OWASP Dependency Check
                     dependencyCheck(
-                        additionalArguments: "--scan ./target/*.jar --data /home/jenkins/dependency-check-data --out dependency-check-report.xml",
+                        additionalArguments: "--scan target/*.jar --data /home/jenkins/dependency-check-data --out dependency-check-report.xml",
                         odcInstallation: "dependency-check"
                     )
 
