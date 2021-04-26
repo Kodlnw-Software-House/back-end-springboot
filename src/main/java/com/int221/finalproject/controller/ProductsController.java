@@ -3,6 +3,9 @@ package com.int221.finalproject.controller;
 import com.int221.finalproject.models.Products;
 import com.int221.finalproject.repository.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +25,21 @@ public class ProductsController {
     @GetMapping("/get/{id}")
     public Products getProductById(@PathVariable int id) {
         return productsRepository.findById(id).orElse(null);
+    }
+
+    @GetMapping("/getsearch")
+    public List<Products> getProductBySearch(@RequestParam("search")String result){
+        List<Products> products = productsRepository.findAll();
+        products.removeIf(product ->  product.getProductName().toLowerCase().contains(result.toLowerCase()) == false);
+        return products;
+    }
+
+    @GetMapping("/productWithPage")
+    public  List<Products> productWithPage(@RequestParam(defaultValue = "0") Integer pageNo,
+                                           @RequestParam(defaultValue = "2") Integer pageSize){
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Products> pageResult = productsRepository.findAll(pageable);
+        return pageResult.getContent();
     }
 
     @PostMapping("/create")
