@@ -137,7 +137,7 @@ spec:
 
                     // Start OWASP Dependency Check
                     dependencyCheck(
-                        additionalArguments: "--data /home/jenkins/dependency-check-data --out dependency-check-report.xml",
+                        additionalArguments: "--scan ./target/*.jar --data /home/jenkins/dependency-check-data --out dependency-check-report.xml",
                         odcInstallation: "dependency-check"
                     )
 
@@ -173,7 +173,7 @@ spec:
             container('jnlp') {
                 script {
                     // dend Docker Image to Anchore Analyzer
-                    writeFile file: 'anchore_images' , text: "ghcr.io/kodlnw-software-nouse/back-end-service:${ENV_NAME}"
+                    writeFile file: 'anchore_images' , text: "ghcr.io/kodlnw-software-house/back-end-service:${ENV_NAME}"
                     anchore name: 'anchore_images' , bailOnFail: false
                 } // End script
             } // End container
