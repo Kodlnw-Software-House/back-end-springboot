@@ -1,0 +1,64 @@
+def scmVars
+
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: helm
+    image: lachlanevenson/k8s-helm:v3.0.2
+    command:
+    - cat
+    tty: true
+"""
+    }
+  }
+
+  // Git Parameter Choices
+  parameters {
+    gitParameter name: 'TAG',
+                 selectedValue: 'TOP',
+                 sortMode: 'DESCENDING_SMART',
+                 tagFilter: 'build-*',
+                 type: 'PT_TAG'
+  }
+
+  stages {
+
+    // ***** Stage Clone *****
+    stage('Clone kodlnw-back-end source code') {
+      steps {
+        script {
+          scmVars = checkout([
+            $class: 'GitSCM',
+            branches: [[name: "refs/tags/${params.TAG}"]],
+            userRemoteConfigs: [[
+              credentialsId: 'kodlnw-deploy-key',
+              url: 'git@github.com:Kodlnw-Software-House/back-end-springboot.git'
+            ]]
+          ])
+        }
+      }
+    }
+
+    // ***** Stage Deploy *****
+    stage('Deploy kodlnw-back-end with Helm Chart') {
+      steps {
+        container('helm') {
+          script {
+            withKubeConfig([credentialsId: 'gke-k8s-kubeconfig']) {
+              // Helm upgrade with set production tag
+              sh "helm upgrade -i -f k8s/helm-values/values-kodlnw-back-end-prd.yaml \
+                --set extraEnv.COMMIT_ID=${scmVars.GIT_COMMIT} \
+                --set details.tag=${params.TAG} \
+                --namespace kodlnw-service-prd kodlnw-service-back-end-prd k8s/helm"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+backend:
+  namespace: kodlnw-service-uat
+  image: ghcr.io/Kodlnw-Software-House/back-end-service
+  tag: uat
+  replicas: 1
+  imagePullSecrets: kodlnw-registry
+  port: 8082
+  healthCheckPath: "/health"
+ingress:
+  host: uat.kodlnw-product.net
+  path: "/back-end(/|$)(.*)"
+  serviceType: ClusterIP
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
