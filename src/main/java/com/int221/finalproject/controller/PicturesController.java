@@ -1,5 +1,7 @@
 package com.int221.finalproject.controller;
 
+import com.int221.finalproject.exceptions.CustomException;
+import com.int221.finalproject.exceptions.ExceptionResponse;
 import com.int221.finalproject.models.Products;
 import com.int221.finalproject.repository.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,62 +11,86 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:8080" })
 @RequestMapping("/picture")
 public class PicturesController {
 
     @Autowired
     private ProductsRepository productsRepository;
 
-    private final String PICTURE_PATH = "./pictures/";
+    private static final String PICTURE_PATH = "./pictures/";
 
     @GetMapping("/get/{id:.+}")
-    public ResponseEntity<byte[]> getImage(@PathVariable("id")String id) throws IOException {
-        FileInputStream fi = new FileInputStream(PICTURE_PATH+id);
-        byte[] image = fi.readAllBytes();
-        fi.close();
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+    public ResponseEntity<byte[]> getImage(@PathVariable("id")String id){
+        try {
+            FileInputStream fi = new FileInputStream(PICTURE_PATH+id);
+            byte[] image = fi.readAllBytes();
+            fi.close();
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+        }
+        catch (FileNotFoundException e){
+            throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+        }
+        catch (IOException e){
+            throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IO_ERROR);
+        }
     }
 
     @PostMapping ("/add/{id}")
-    public ResponseEntity<Object> fileUpload(@RequestParam("File")MultipartFile file,@PathVariable("id")int id)throws IOException{
-        if(hasFoundId(id)){
-        String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        File myFile = new File(PICTURE_PATH + id+fileType);
-        myFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(myFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return  new ResponseEntity<Object>("The File Uploaded Successfully", HttpStatus.OK);
+    public ResponseEntity<Object> fileUpload(@RequestParam("File")MultipartFile file,@PathVariable("id")int id){
+        try {
+            if (hasFoundId(id)) {
+                String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+                File myFile = new File(PICTURE_PATH + id + fileType);
+                myFile.createNewFile();
+                FileOutputStream fos = new FileOutputStream(myFile);
+                fos.write(file.getBytes());
+                fos.close();
+                return new ResponseEntity<>("The File Uploaded Successfully.", HttpStatus.OK);
+            }
+            throw new CustomException("Product Id :"+id+" does not exist !",ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
+        }catch (IOException e){
+            throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IO_ERROR);
         }
-        return  new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/edit/{id:.+}")
     public void changeImage(@RequestParam("File")MultipartFile file,@PathVariable("id")String id)throws IOException {
-        String FileName[] = id.split("\\.(?=[^\\.]+$)");
-        int hasId = parseInt(FileName[0]);
-        if(hasFoundId(hasId)) {
-            this.deleteImage(id);
-            this.fileUpload(file,hasId);
+        try {
+            String[] FileName = id.split("\\.(?=[^\\.]+$)");
+            int hasId = parseInt(FileName[0]);
+            if(hasFoundId(hasId)) {
+                this.deleteImage(id);
+                this.fileUpload(file,hasId);
+                return;
+            }
+            throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+        }
+        catch (NumberFormatException e){
+            throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
         }
     }
 
     @DeleteMapping("/delete/{id:.+}")
     public void deleteImage(@PathVariable("id")String id){
-        String idString[] = id.split("\\.(?=[^\\.]+$)");
-        int hasId = parseInt(idString[0]);
-        if (hasFoundId(hasId)){
-            File myFile = new File(PICTURE_PATH + id);
-            myFile.delete();
+        try {
+            String[] idString = id.split("\\.(?=[^\\.]+$)");
+            int hasId = parseInt(idString[0]);
+            if (hasFoundId(hasId)){
+                File myFile = new File(PICTURE_PATH + id);
+                myFile.delete();
+                return;
+            }
+            throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+        }
+        catch (NumberFormatException e){
+            throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
         }
     }
 

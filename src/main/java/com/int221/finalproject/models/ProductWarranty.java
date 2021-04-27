@@ -1,7 +1,6 @@
 package com.int221.finalproject.models;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,11 +12,11 @@ import javax.persistence.Table;
 public class ProductWarranty {
     @Id
     @Column(name ="warrantyid")
-    @Getter@Setter
+    @Getter
     private int warrantyId;
 
     @Column(name="warrantydescription")
-    @Getter@Setter
+    @Getter
     private String warrantyDescription;
 
 }
