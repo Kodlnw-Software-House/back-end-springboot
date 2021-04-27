@@ -129,28 +129,6 @@ spec:
         } // End steps
     } // End stage
     
-    // ***** Stage OWASP *****
-    stage('OWASP Dependency Check') {
-        steps {
-            container('java-node') {
-                script {
-
-                    // Start OWASP Dependency Check
-                    dependencyCheck(
-                        additionalArguments: "--scan target/*.jar --data /home/jenkins/dependency-check-data --out dependency-check-report.xml",
-                        odcInstallation: "dependency-check"
-                    )
-
-                    // Publish report to Jenkins
-                    dependencyCheckPublisher(
-                        pattern: 'dependency-check-report.xml'
-                    )
-
-                } // End script
-            } // End container
-        } // End steps
-    } // End stage
-
    
     // ***** Stage Build *****
     stage('Build kodlnw-back-end Docker Image and push') {
