@@ -1,5 +1,7 @@
 package com.int221.finalproject.controller;
 
+import com.int221.finalproject.exceptions.CustomException;
+import com.int221.finalproject.exceptions.ExceptionResponse;
 import com.int221.finalproject.models.Products;
 import com.int221.finalproject.repository.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:8080" })
 @RequestMapping("/products")
 public class ProductsController {
 
@@ -24,18 +27,21 @@ public class ProductsController {
 
     @GetMapping("/get/{id}")
     public Products getProductById(@PathVariable int id) {
-        return productsRepository.findById(id).orElse(null);
+        if (hasFoundId(id)) {
+            return productsRepository.findById(id).get();
+        }
+        else throw new CustomException("Product Id :"+id+" does not exist !", ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
     }
 
     @GetMapping("/getsearch")
     public List<Products> getProductBySearch(@RequestParam("search")String result){
         List<Products> products = productsRepository.findAll();
-        products.removeIf(product ->  product.getProductName().toLowerCase().contains(result.toLowerCase()) == false);
+        products.removeIf(product ->  !product.getProductName().toLowerCase().contains(result.toLowerCase()));
         return products;
     }
 
     @GetMapping("/productWithPage")
-    public  List<Products> productWithPage(@RequestParam(defaultValue = "0") Integer pageNo,
+    public List<Products> productWithPage(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "2") Integer pageSize){
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Products> pageResult = productsRepository.findAll(pageable);
@@ -44,8 +50,11 @@ public class ProductsController {
 
     @PostMapping("/create")
     public Products createNewProduct(@RequestBody Products product){
-        productsRepository.save(product);
-        return product;
+        if (!hasFoundId(product.getProductCode())) {
+            productsRepository.save(product);
+            return product;
+        }
+        else throw new CustomException("Product Id :"+product.getProductCode()+" already exist !", ExceptionResponse.ERROR_CODE.PRODUCT_ALREADY_EXIST);
     }
 
     @PutMapping("/edit/{id}")
@@ -54,8 +63,7 @@ public class ProductsController {
             productsRepository.save(product);
             return product;
         }
-        else
-            return null;
+        else throw new CustomException("Product Id :"+id+" does not exist !", ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -63,6 +71,7 @@ public class ProductsController {
         if (hasFoundId(id)) {
             productsRepository.deleteById(id);
         }
+        else throw new CustomException("Product Id :"+id+" does not exist !", ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
     }
 
 

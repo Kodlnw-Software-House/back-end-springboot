@@ -1,24 +1,20 @@
 package com.int221.finalproject.models;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Table(name="brands")
 public class Brands {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "brandid")
-    @Getter@Setter
+    @Getter
     private String brandId;
 
-    @Getter@Setter
+    @Getter
     @Column(name = "brandname")
     private String brandName;
 
-//    @OneToMany(mappedBy="brands")
-//    @Getter@Setter
-//    private List<Products> products;
 }
