@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class RestServiceCorsApplication implements WebMvcConfigurer {
 
-    private final static String HOST_URL = "http://"+System.getenv("ENV_HOST") == null ? "localhost:8081" : System.getenv("ENV_HOST");
+    public static final String HOST_URL = "http://"+System.getenv("ENV_HOST") == null ? "localhost:8081" : System.getenv("ENV_HOST");
 
     @Value("#{'GET, PUT, HEAD, POST, DELETE, OPTION'.split(', ')}")
     private String[] methodList;

@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
@@ -28,6 +26,9 @@ public class PicturesController {
 
     private static final String PICTURE_PATH = "./public/pictures/";
 
+    private static final String FORM_1 = " does not exist !";
+    private static final String FORM_2 = "Product Id :";
+
     @GetMapping("/get/{id:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id")String id){
         try {
@@ -37,7 +38,7 @@ public class PicturesController {
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
         }
         catch (FileNotFoundException e){
-            throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+            throw new CustomException(id+FORM_1,ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
         }
         catch (IOException e){
             throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IO_ERROR);
@@ -59,9 +60,9 @@ public class PicturesController {
                     fos.close();
                     return new ResponseEntity<>("The File Uploaded Successfully.", HttpStatus.OK);
                 }else
-                    throw new CustomException("Product Id :"+id+" Image Already Exist.",ExceptionResponse.ERROR_CODE.IMAGE_ALREADY_EXIST);
+                    throw new CustomException(FORM_2+id+" Image Already Exist.",ExceptionResponse.ERROR_CODE.IMAGE_ALREADY_EXIST);
             }
-            throw new CustomException("Product Id :"+id+" does not exist !",ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
+            throw new CustomException(FORM_2+id+FORM_1,ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
         }catch (IOException e){
             throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IO_ERROR);
         }
@@ -77,7 +78,7 @@ public class PicturesController {
                 this.fileUpload(file,hasId);
                 return;
             }
-            throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+            throw new CustomException(id+FORM_1,ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
         }
         catch (NumberFormatException e){
             throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
@@ -85,7 +86,7 @@ public class PicturesController {
     }
 
     @DeleteMapping("/delete/{id:.+}")
-    public void deleteImage(@PathVariable("id")String id){
+    public void deleteImage(@PathVariable("id")String id)throws NoSuchFileException, DirectoryNotEmptyException {
         try {
             String[] idString = id.split("\\.(?=[^\\.]+$)");
             int hasId = parseInt(idString[0]);
@@ -98,7 +99,7 @@ public class PicturesController {
                     throw new CustomException("File Delete Failed.",ExceptionResponse.ERROR_CODE.IO_ERROR);
                 }
             }
-            throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+            throw new CustomException(id+FORM_1,ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
         }
         catch (NumberFormatException e){
             throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
