@@ -7,5 +7,5 @@ RUN mvn -f pom.xml clean package
 
 FROM openjdk:11.0.11-9-jdk
 COPY --from=builder /usr/src/app/target/*.jar backend-service.jar
-EXPOSE 8080
+EXPOSE 8082
 ENTRYPOINT ["java","-jar","backend-service.jar"]

@@ -145,19 +145,6 @@ spec:
       } // End steps
     } // End stage
     
-    // ***** Stage Anchore *****
-    stage('Anchore Engine') {
-        steps {
-            container('jnlp') {
-                script {
-                    // dend Docker Image to Anchore Analyzer
-                    writeFile file: 'anchore_images' , text: "ghcr.io/kodlnw-software-house/back-end-service:${ENV_NAME}"
-                    anchore name: 'anchore_images' , bailOnFail: false , engineRetries: '10000'
-                } // End script
-            } // End container
-        } // End steps
-    } // End stage
-    
     stage('Deploy kodlnw-back-end with Helm Chart') {
       steps {
         // Run on Helm container
