@@ -12,19 +12,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:8081" })
 @RequestMapping("/picture")
 public class PicturesController {
 
     @Autowired
     private ProductsRepository productsRepository;
 
-    private static final String PICTURE_PATH = "./pictures/";
+    private static final String PICTURE_PATH = "./public/pictures/";
 
     @GetMapping("/get/{id:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable("id")String id){
@@ -46,6 +48,9 @@ public class PicturesController {
     public ResponseEntity<Object> fileUpload(@RequestParam("File")MultipartFile file,@PathVariable("id")int id){
         try {
             if (hasFoundId(id)) {
+                Path path = Paths.get(PICTURE_PATH);
+                File dir = new File(PICTURE_PATH);
+                if (!dir.exists()) Files.createDirectories(path);
                 String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                 File myFile = new File(PICTURE_PATH + id + fileType);
                 if(myFile.createNewFile()) {
