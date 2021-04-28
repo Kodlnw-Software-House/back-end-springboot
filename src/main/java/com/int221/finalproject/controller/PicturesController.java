@@ -17,7 +17,7 @@ import java.util.List;
 import static java.lang.Integer.parseInt;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:8080" })
+@CrossOrigin(origins = {"http://localhost:8081" })
 @RequestMapping("/picture")
 public class PicturesController {
 
@@ -48,11 +48,13 @@ public class PicturesController {
             if (hasFoundId(id)) {
                 String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                 File myFile = new File(PICTURE_PATH + id + fileType);
-                myFile.createNewFile();
-                FileOutputStream fos = new FileOutputStream(myFile);
-                fos.write(file.getBytes());
-                fos.close();
-                return new ResponseEntity<>("The File Uploaded Successfully.", HttpStatus.OK);
+                if(myFile.createNewFile()) {
+                    FileOutputStream fos = new FileOutputStream(myFile);
+                    fos.write(file.getBytes());
+                    fos.close();
+                    return new ResponseEntity<>("The File Uploaded Successfully.", HttpStatus.OK);
+                }else
+                    throw new CustomException("Product Id :"+id+" Image Already Exist.",ExceptionResponse.ERROR_CODE.IMAGE_ALREADY_EXIST);
             }
             throw new CustomException("Product Id :"+id+" does not exist !",ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
         }catch (IOException e){
@@ -63,8 +65,8 @@ public class PicturesController {
     @PutMapping("/edit/{id:.+}")
     public void changeImage(@RequestParam("File")MultipartFile file,@PathVariable("id")String id)throws IOException {
         try {
-            String[] FileName = id.split("\\.(?=[^\\.]+$)");
-            int hasId = parseInt(FileName[0]);
+            String[] fileName = id.split("\\.(?=[^\\.]+$)");
+            int hasId = parseInt(fileName[0]);
             if(hasFoundId(hasId)) {
                 this.deleteImage(id);
                 this.fileUpload(file,hasId);
@@ -84,8 +86,12 @@ public class PicturesController {
             int hasId = parseInt(idString[0]);
             if (hasFoundId(hasId)){
                 File myFile = new File(PICTURE_PATH + id);
-                myFile.delete();
-                return;
+                if (myFile.delete()){
+                    return;
+                }
+                else {
+                    throw new CustomException("File Delete Failed.",ExceptionResponse.ERROR_CODE.IO_ERROR);
+                }
             }
             throw new CustomException(id+" does not exist !",ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
         }
