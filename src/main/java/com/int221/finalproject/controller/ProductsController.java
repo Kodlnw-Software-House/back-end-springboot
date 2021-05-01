@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -46,6 +47,39 @@ public class ProductsController {
         Page<Products> pageResult = productsRepository.findAll(pageable);
         return pageResult.getContent();
     }
+
+    @GetMapping("/searchProductWithPage")
+    public List<Products> searchProductWithPage(@RequestParam(required = false,name = "title") String title,
+                                          @RequestParam(defaultValue = "0") Integer pageNo,
+                                          @RequestParam(defaultValue = "2") Integer pageSize){
+        Page<Products> pageResult;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        if (title != null){
+            pageResult = productsRepository.findByProductNameContains(title, pageable);
+        }
+        else{
+            pageResult = productsRepository.findAll(pageable);
+        }
+        return pageResult.getContent();
+    }
+
+    @GetMapping("/pageSearchInfo")
+    public HashMap<String, Integer> pageSearchInfo(@RequestParam(required = false,name = "title") String title,
+                                   @RequestParam(defaultValue = "2") Integer pageSize){
+        Page<Products> pageResult;
+        Pageable pageable = PageRequest.of(0, pageSize);
+        if (title != null){
+            pageResult = productsRepository.findByProductNameContains(title, pageable);
+        }
+        else{
+            pageResult = productsRepository.findAll(pageable);
+        }
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("totalPage",pageResult.getTotalPages());
+        map.put("totalElements",(int) pageResult.getTotalElements());
+        return map;
+    }
+
 
     @PostMapping("/create")
     public Products createNewProduct(@RequestBody Products product){
