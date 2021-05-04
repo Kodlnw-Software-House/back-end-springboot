@@ -13,7 +13,6 @@ import java.util.List;
 public class Products {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="productcode")
     @Getter
     @Setter
