@@ -92,7 +92,7 @@ public class ProductsController {
 
     @PutMapping("/edit/{id}")
     public Products editProduct(@RequestBody Products product,@PathVariable int id){
-        if (hasFoundId(id)) {
+        if (hasFoundId(id) && (id == product.getProductCode())) {
             productsRepository.save(product);
             return product;
         }

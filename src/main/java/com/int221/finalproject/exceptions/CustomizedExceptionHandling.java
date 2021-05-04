@@ -1,6 +1,5 @@
 package com.int221.finalproject.exceptions;
 
-import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,10 +16,5 @@ public class CustomizedExceptionHandling extends ResponseEntityExceptionHandler 
     public ResponseEntity<Object> handleExceptions(CustomException customException, WebRequest webRequest) {
         ExceptionResponse response = new ExceptionResponse(customException.getErrorCode(),customException.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public String sss(){
-        return "sdasda";
     }
 }
