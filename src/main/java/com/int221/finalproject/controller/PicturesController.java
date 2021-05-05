@@ -74,11 +74,14 @@ public class PicturesController {
             String[] fileName = id.split("\\.(?=[^\\.]+$)");
             int hasId = parseInt(fileName[0]);
             if(hasFoundId(hasId)) {
-                this.deleteImage(id);
+                File foundFile = new File(PICTURE_PATH + id);
+                if(foundFile.exists() && !foundFile.isDirectory()){
+                    this.deleteImage(id);
+                }
                 this.fileUpload(file,hasId);
                 return;
             }
-            throw new CustomException(id+FORM_1,ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
+            throw new CustomException(id+FORM_1,ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
         }
         catch (NumberFormatException e){
             throw new CustomException(e.toString(),ExceptionResponse.ERROR_CODE.IMAGE_DOES_NOT_EXIST);
