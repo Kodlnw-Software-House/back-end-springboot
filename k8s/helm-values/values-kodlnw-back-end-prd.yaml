@@ -4,7 +4,7 @@ backend:
   tag: prd
   replicas: 1
   imagePullSecrets: kodlnw-registry
-  port: 8880
+  port: 2083
   healthCheckPath: "/health"
 ingress:
   host: kodlnw-product.net

@@ -4,7 +4,7 @@ backend:
   tag: uat
   replicas: 1
   imagePullSecrets: kodlnw-registry
-  port: 8880
+  port: 2083
   healthCheckPath: "/health"
 ingress:
   host: uat.kodlnw-product.net
