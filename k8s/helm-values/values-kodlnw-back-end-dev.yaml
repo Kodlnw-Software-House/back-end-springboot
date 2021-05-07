@@ -7,8 +7,8 @@ backend:
   port: 8880
   healthCheckPath: "/health"
 ingress:
-  host: dev.kodlnw-product.net
-  path: "/back-end(/|$)(.*)"
+  host: dev.backend.ingress.kodlnw-product.net
+  path: "/"
   serviceType: ClusterIP
   annotations:
     kubernetes.io/ingress.class: nginx
