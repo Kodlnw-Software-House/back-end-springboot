@@ -33,21 +33,6 @@ public class ProductsController {
         else throw new CustomException("Product Id :"+id+" does not exist !", ExceptionResponse.ERROR_CODE.PRODUCT_DOES_NOT_EXIST);
     }
 
-    @GetMapping("/getsearch")
-    public List<Products> getProductBySearch(@RequestParam("search")String result){
-        List<Products> products = productsRepository.findAll();
-        products.removeIf(product ->  !product.getProductName().toLowerCase().contains(result.toLowerCase()));
-        return products;
-    }
-
-    @GetMapping("/productWithPage")
-    public List<Products> productWithPage(@RequestParam(defaultValue = "0") Integer pageNo,
-                                           @RequestParam(defaultValue = "2") Integer pageSize){
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Products> pageResult = productsRepository.findAll(pageable);
-        return pageResult.getContent();
-    }
-
     @GetMapping("/searchProductWithPage")
     public List<Products> searchProductWithPage(@RequestParam(required = false,name = "title") String title,
                                           @RequestParam(defaultValue = "0") Integer pageNo,
