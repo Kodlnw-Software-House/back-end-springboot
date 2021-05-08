@@ -15,7 +15,7 @@ public class CorsConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins(HOST_URL).allowedMethods(methodList);
+        registry.addMapping("/**").allowedOrigins(HOST_URL,"https://dev.kodlnw-product.net").allowedMethods(methodList);
     }
 
 }
