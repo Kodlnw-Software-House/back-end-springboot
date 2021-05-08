@@ -23,16 +23,6 @@ spec:
         - containerPort: {{ .Values.backend.port }}
           name: web-port
           protocol: TCP
-        livenessProbe:
-          httpGet:
-            path: {{ .Values.backend.healthCheckPath }}
-            port: {{ .Values.backend.port }}
-            scheme: HTTP
-        readinessProbe:
-          httpGet:
-            path: {{ .Values.backend.healthCheckPath }}
-            port: {{ .Values.backend.port }}
-            scheme: HTTP
         {{- if .Values.extraEnv }}
         env:
         {{- range $key, $value := .Values.extraEnv }}
