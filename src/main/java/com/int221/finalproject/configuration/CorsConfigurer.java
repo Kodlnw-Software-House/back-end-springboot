@@ -8,14 +8,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfigurer implements WebMvcConfigurer {
 
-    public static final String HOST_URL = "http://"+(System.getenv("ENV_HOST") == null ? "localhost" : System.getenv("ENV_HOST"));
+    public static final String HOST_URL = (System.getenv("ENV_HOST") == null ? "http://localhost" : System.getenv("ENV_HOST"));
 
     @Value("#{'GET, PUT, HEAD, POST, DELETE, OPTION'.split(', ')}")
     private String[] methodList;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins(HOST_URL,"https://dev.kodlnw-product.net").allowedMethods(methodList);
+        registry.addMapping("/**").allowedOrigins(HOST_URL).allowedMethods(methodList);
     }
 
 }
